@@ -1,13 +1,13 @@
-ARG BUILD_FROM
+ARG BUILD_FROM=ghcr.io/home-assistant/amd64-base-python:3.11
 FROM $BUILD_FROM
 
-RUN apk add --no-cache python3 py3-pip
-RUN pip3 install flask requests --break-system-packages
-
-COPY run.sh /run.sh
-COPY app/server.py /app/server.py
-COPY app/templates/index.html /app/templates/index.html
-RUN chmod +x /run.sh
-
 WORKDIR /app
+
+RUN pip3 install flask requests --break-system-packages 2>/dev/null || pip3 install flask requests
+
+COPY app/server.py /app/server.py
+COPY app/templates/ /app/templates/
+COPY run.sh /run.sh
+RUN chmod a+x /run.sh
+
 CMD ["/run.sh"]
