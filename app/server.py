@@ -5,7 +5,11 @@ import os, json, time, random, base64, logging, requests
 from flask import Flask, request, jsonify, send_from_directory
 from datetime import datetime, timezone
 
-app = Flask(__name__, static_folder='static', template_folder='templates')
+import os as _os
+_BASE = _os.path.dirname(_os.path.abspath(__file__))
+app = Flask(__name__, 
+    static_folder=_os.path.join(_BASE, 'static'),
+    template_folder=_os.path.join(_BASE, 'templates'))
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__name__)
 
@@ -205,7 +209,7 @@ def claude_generate(doctor, prompt, api_key):
 # ── Routes ────────────────────────────────────────────────────
 @app.route('/')
 def index():
-    return send_from_directory('templates', 'index.html')
+    return send_from_directory(_os.path.join(_BASE, 'templates'), 'index.html')
 
 @app.route('/api/search', methods=['POST'])
 def api_search():
