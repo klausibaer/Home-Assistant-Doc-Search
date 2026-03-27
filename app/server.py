@@ -6,18 +6,11 @@ from flask import Flask, request, jsonify, send_from_directory
 from datetime import datetime, timezone
 
 import os as _os
-_BASE = _os.path.dirname(_os.path.abspath(__file__))
-_TMPL = _os.path.join(_BASE, 'templates')
-_STATIC = _os.path.join(_BASE, 'static')
+_BASE = '/app'
 
-# Debug: log what exists
-import logging as _log2
-_log2.basicConfig(level=_log2.INFO)
-_log2.getLogger(__name__).info(f'BASE={_BASE}, templates exists={_os.path.exists(_TMPL)}, index exists={_os.path.exists(_os.path.join(_TMPL, "index.html"))}')
-
-app = Flask(__name__, 
-    static_folder=_STATIC,
-    template_folder=_TMPL)
+app = Flask(__name__,
+    static_folder=_os.path.join(_BASE, 'static'),
+    template_folder=_os.path.join(_BASE, 'templates'))
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__name__)
 
@@ -217,10 +210,7 @@ def claude_generate(doctor, prompt, api_key):
 # ── Routes ────────────────────────────────────────────────────
 @app.route('/')
 def index():
-    idx = _os.path.join(_BASE, 'templates', 'index.html')
-    if not _os.path.exists(idx):
-        return f'index.html not found at {idx}. BASE={_BASE}, files={_os.listdir(_BASE)}', 404
-    return send_from_directory(_os.path.join(_BASE, 'templates'), 'index.html')
+    return send_from_directory('/app/templates', 'index.html')
 
 @app.route('/api/search', methods=['POST'])
 def api_search():
