@@ -1,5 +1,5 @@
 name: "Arztsuche Outreach"
-description: "116117 Arztsuche + Claude AI E-Mail + Gmail + Google Calendar — komplett in HA"
+description: "116117 Arztsuche + Claude AI + Gmail + Google Calendar"
 version: "1.0.2"
 slug: "arztsuche_outreach"
 init: false
@@ -8,28 +8,13 @@ arch:
   - amd64
   - armhf
   - armv7
-homeassistant_api: false
-hassio_api: false
 ingress: true
 ingress_port: 5055
-ingress_stream: false
 panel_icon: mdi:doctor
 panel_title: Arztsuche
 startup: services
 boot: auto
-options:
-  claude_api_key: ""
-  gmail_client_id: ""
-  gmail_client_secret: ""
-  gmail_refresh_token: ""
-  gcal_client_id: ""
-  gcal_client_secret: ""
-  gcal_refresh_token: ""
-schema:
-  claude_api_key: str
-  gmail_client_id: str
-  gmail_client_secret: str
-  gmail_refresh_token: str
-  gcal_client_id: str
-  gcal_client_secret: str
-  gcal_refresh_token: str
+map: []
+options: {}
+schema: {}
+image: ""
