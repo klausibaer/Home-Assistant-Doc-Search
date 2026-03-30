@@ -5,28 +5,28 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Arztsuche Outreach</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+/* System fonts — no external dependency */
 :root{--bg:#F4F6F5;--surface:#fff;--border:#D8DFE0;--teal:#0D5E5B;--teal-mid:#1A7A76;--teal-light:#E8F4F3;--teal-glow:#1A7A7620;--text:#121C1C;--text-2:#4A5858;--text-3:#8A9A9A;--success:#1A8A4A;--success-bg:#E8F5EE;--error:#C0392B;--error-bg:#FDECEA;--warn:#C07A1A;--warn-bg:#FDF5E6;--r:8px;--r-lg:12px}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;min-height:100vh}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;min-height:100vh}
 .header{background:var(--teal);color:#fff;padding:0 28px;display:flex;align-items:center;gap:16px;height:56px;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.2)}
 .header-logo{width:32px;height:32px;background:rgba(255,255,255,.15);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px}
 .header-title{font-size:15px;font-weight:600}
 .header-sub{font-size:12px;opacity:.6}
 .header-spacer{flex:1}
-.header-badge{font-size:11px;font-family:'DM Mono',monospace;background:rgba(255,255,255,.12);padding:3px 10px;border-radius:20px}
+.header-badge{font-size:11px;font-family:monospace;background:rgba(255,255,255,.12);padding:3px 10px;border-radius:20px}
 .layout{display:flex;min-height:calc(100vh - 56px);position:relative}
 .sidebar{width:280px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);padding:20px 0;position:sticky;top:56px;height:calc(100vh - 56px);overflow-y:auto}
 .sidebar-section{padding:0 16px;margin-bottom:8px}
 .sidebar-label{font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--text-3);padding:12px 16px 6px}
 .field-group{margin-bottom:12px}
 .field-label{font-size:12px;font-weight:500;color:var(--text-2);margin-bottom:5px;display:block}
-.field-input,.field-select,.field-textarea{width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);background:var(--surface);transition:border-color .15s;outline:none}
+.field-input,.field-select,.field-textarea{width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:var(--r);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:13px;color:var(--text);background:var(--surface);transition:border-color .15s;outline:none}
 .field-input:focus,.field-select:focus,.field-textarea:focus{border-color:var(--teal-mid);box-shadow:0 0 0 3px var(--teal-glow)}
-.field-input.mono{font-family:'DM Mono',monospace;font-size:12px}
+.field-input.mono{font-family:monospace;font-size:12px}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .sidebar-divider{height:1px;background:var(--border);margin:12px 0}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:9px 16px;border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all .15s}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:9px 16px;border-radius:var(--r);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all .15s}
 .btn-primary{background:var(--teal);color:#fff;width:100%;box-shadow:0 2px 6px rgba(13,94,91,.3)}
 .btn-primary:hover{background:var(--teal-mid);transform:translateY(-1px)}
 .btn-primary:disabled{background:var(--text-3);box-shadow:none;transform:none;cursor:not-allowed}
@@ -56,7 +56,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 .stat-label{font-size:11px;color:var(--text-3);font-weight:500;text-transform:uppercase;letter-spacing:.5px}
 .results-toolbar{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
 .results-count{font-size:13px;font-weight:600;background:var(--teal-light);color:var(--teal);padding:4px 12px;border-radius:20px}
-.search-filter{flex:1;min-width:180px;padding:7px 10px;border:1.5px solid var(--border);border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:13px;outline:none}
+.search-filter{flex:1;min-width:180px;padding:7px 10px;border:1.5px solid var(--border);border-radius:var(--r);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:13px;outline:none}
 .search-filter:focus{border-color:var(--teal-mid);box-shadow:0 0 0 3px var(--teal-glow)}
 .table-wrap{overflow-x:auto;border-radius:var(--r-lg);border:1px solid var(--border)}
 table{width:100%;border-collapse:collapse;font-size:13px}
@@ -67,7 +67,7 @@ tbody tr:hover{background:var(--teal-light)}
 tbody tr.selected{background:#EBF6F5}
 td{padding:10px 12px;vertical-align:top}
 td.name-cell{font-weight:500}
-td.phone-cell{font-family:'DM Mono',monospace;font-size:12px}
+td.phone-cell{font-family:monospace;font-size:12px}
 td.email-cell{font-size:12px;color:var(--teal-mid)}
 .tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:500}
 .tag-fach{background:#EBF0F8;color:#3A5A8A}
@@ -76,9 +76,9 @@ td.email-cell{font-size:12px;color:var(--teal-mid)}
 .tag-warn{background:var(--warn-bg);color:var(--warn)}
 .composer-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .placeholder-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
-.chip{font-size:11px;font-family:'DM Mono',monospace;background:var(--teal-light);color:var(--teal);border:1px solid #B0D4D2;padding:3px 8px;border-radius:4px;cursor:pointer;transition:all .1s;user-select:none}
+.chip{font-size:11px;font-family:monospace;background:var(--teal-light);color:var(--teal);border:1px solid #B0D4D2;padding:3px 8px;border-radius:4px;cursor:pointer;transition:all .1s;user-select:none}
 .chip:hover{background:var(--teal);color:#fff;border-color:var(--teal)}
-.composer-textarea{width:100%;min-height:220px;padding:12px;border:1.5px solid var(--border);border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:13px;line-height:1.6;color:var(--text);resize:vertical;outline:none}
+.composer-textarea{width:100%;min-height:220px;padding:12px;border:1.5px solid var(--border);border-radius:var(--r);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:13px;line-height:1.6;color:var(--text);resize:vertical;outline:none}
 .composer-textarea:focus{border-color:var(--teal-mid);box-shadow:0 0 0 3px var(--teal-glow)}
 .ai-prompt-area{background:linear-gradient(135deg,var(--teal-light),#F4F0F8);border:1.5px solid #B0D4D2;border-radius:var(--r-lg);padding:16px;margin-bottom:16px}
 .ai-label{font-size:12px;font-weight:600;color:var(--teal);display:flex;align-items:center;gap:6px;margin-bottom:8px}
@@ -88,13 +88,13 @@ td.email-cell{font-size:12px;color:var(--teal-mid)}
 .queue-item.sent{background:var(--success-bg);border-color:#A8D8BC}
 .queue-item.failed{background:var(--error-bg);border-color:#F5C6C2}
 .queue-item-name{font-weight:500;font-size:13px;flex:1}
-.queue-item-email{font-size:12px;color:var(--text-2);font-family:'DM Mono',monospace}
+.queue-item-email{font-size:12px;color:var(--text-2);font-family:monospace}
 .queue-status{font-size:12px;font-weight:500}
 .call-cards{display:flex;flex-direction:column;gap:10px}
 .call-card{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:12px;padding:12px 16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r)}
 .call-card-name{font-weight:500;font-size:13px}
-.call-card-phone{font-size:12px;color:var(--text-2);font-family:'DM Mono',monospace}
-.datetime-input{padding:7px 10px;border:1.5px solid var(--border);border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:12px;outline:none;color:var(--text)}
+.call-card-phone{font-size:12px;color:var(--text-2);font-family:monospace}
+.datetime-input{padding:7px 10px;border:1.5px solid var(--border);border-radius:var(--r);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:12px;outline:none;color:var(--text)}
 .datetime-input:focus{border-color:var(--teal-mid)}
 .progress-overlay{position:fixed;inset:0;background:rgba(18,28,28,.55);display:none;align-items:center;justify-content:center;z-index:1000;backdrop-filter:blur(3px)}
 .progress-overlay.show{display:flex}
@@ -180,7 +180,7 @@ input[type="checkbox"]{accent-color:var(--teal)}
       </div>
       <div class="field-group" style="position:relative">
         <label class="field-label">Fachbereich</label>
-        <input class="field-input" id="fachbereichInput" type="text" placeholder="z.B. Psychiatrie, Urologie…" autocomplete="off" oninput="onFachInput(this.value)" onblur="setTimeout(hideSuggestions,200)">
+        <input class="field-input" id="fachbereichInput" type="text" placeholder="z.B. Psychiatrie, Urologie…" autocomplete="off">
         <input type="hidden" id="fachbereichSelect" value="">
         <div id="fachSuggestions" style="display:none;position:absolute;top:100%;left:0;right:0;background:#fff;border:1.5px solid var(--teal-mid);border-top:none;border-radius:0 0 var(--r) var(--r);box-shadow:0 4px 12px rgba(0,0,0,.1);z-index:500;max-height:260px;overflow-y:auto"></div>
       </div>
@@ -195,6 +195,21 @@ input[type="checkbox"]{accent-color:var(--teal)}
       </button>
     </div>
 
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-label">116117 Session Cookie</div>
+    <div class="sidebar-section">
+      <div class="field-group">
+        <label class="field-label" style="display:flex;justify-content:space-between">
+          Cookie
+          <span class="toggle-key" onclick="document.getElementById('sessionCookie').classList.toggle('key-hidden')">anzeigen</span>
+        </label>
+        <textarea class="field-input mono key-hidden" id="sessionCookie" rows="2" style="font-size:10px;resize:none" placeholder="JSESSIONID=...; TS013407f0=..."></textarea>
+        <div style="font-size:11px;color:var(--text-3);margin-top:4px;line-height:1.5">
+          F12 → Network → /api/data → Request Headers → <b>cookie</b> kopieren.<br>
+          Gültig ~25 Min.
+        </div>
+      </div>
+    </div>
     <div class="sidebar-divider"></div>
     <div class="sidebar-label">Claude API</div>
     <div class="sidebar-section">
@@ -369,7 +384,7 @@ input[type="checkbox"]{accent-color:var(--teal)}
 var state = { doctors: [], selected: {} };
 
 // Config field IDs to persist
-var CONFIG_FIELDS = ['apiKeyInput','gmailClientId','gmailSecret','gmailRefresh','senderName'];
+var CONFIG_FIELDS = ['apiKeyInput','gmailClientId','gmailSecret','gmailRefresh','senderName','sessionCookie'];
 
 // Base URL — works with HA Ingress which adds path prefix
 var BASE = (function(){
@@ -406,6 +421,20 @@ function loadConfig(){
   // Fachbereich autocomplete initialized
   document.getElementById('emailBody').addEventListener('input', updatePreview);
   document.getElementById('emailSubject').addEventListener('input', updatePreview);
+  document.getElementById('fachbereichInput').addEventListener('input', function(){ onFachInput(this.value); });
+  document.getElementById('fachbereichInput').addEventListener('blur', function(){ setTimeout(hideSuggestions, 200); });
+
+  // Startup test
+  fetch('api/fachbereiche')
+    .then(function(r){ return r.json(); })
+    .then(function(list){
+      if(list && list.length) {
+        console.log('API reachable, fachbereiche loaded:', list.length);
+      }
+    })
+    .catch(function(e){
+      showAlert('alertArea','error','⚠️ API nicht erreichbar: ' + e.message + ' — URL: ' + window.location.href);
+    });
 
   // Load saved config on startup
   loadConfig();
@@ -437,7 +466,7 @@ function startSearch(){
   setLoading('searchBtn',true);
   showProgress('Suche läuft…','Crawle 116117 für '+fach+' um '+plz);
   fetch(api('api/search'),{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({plz:plz,fachbereich:fach,fgg:(fachFilter&&fachFilter.fgg)||null,filterSelections:(fachFilter&&fachFilter.filterSelections)||null,radius:parseInt(document.getElementById('radiusInput').value)||15})
+    body:JSON.stringify({plz:plz,fachbereich:fach,fgg:(fachFilter&&fachFilter.fgg)||null,filterSelections:(fachFilter&&fachFilter.filterSelections)||null,radius:parseInt(document.getElementById('radiusInput').value)||15,cookie:document.getElementById('sessionCookie').value.trim()})
   }).then(function(r){return r.json()}).then(function(data){
     hideProgress(); setLoading('searchBtn',false);
     if(data.error){ showAlert('alertArea','error','❌ '+data.error); return; }
@@ -697,7 +726,7 @@ function renderSuggestions(data, q){
       var item = document.createElement('div');
       item.style.cssText = 'padding:9px 14px;cursor:pointer;font-size:13px;border-bottom:1px solid #F0F4F4;display:flex;justify-content:space-between;align-items:center';
       item.innerHTML = '<span>' + esc(entry.value) + '</span>' +
-        '<span style="font-size:11px;color:var(--text-3);font-family:'DM Mono',monospace">' + (entry.count||'').toLocaleString('de') + '</span>';
+        '<span style="font-size:11px;color:var(--text-3);font-family:monospace">' + (entry.count||'').toLocaleString('de') + '</span>';
       item.addEventListener('mousedown', function(){
         selectFach(entry, group);
       });
