@@ -1,6 +1,6 @@
 name: "Arztsuche Outreach"
 description: "116117 Arztsuche + Claude AI + Gmail + Google Calendar"
-version: "1.0.5"
+version: "1.0.6"
 slug: "arztsuche_outreach"
 init: false
 arch:
