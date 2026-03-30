@@ -1,9 +1,9 @@
-FROM python:3.11-alpine
+FROM ghcr.io/home-assistant/aarch64-base:latest
+
+RUN apk add --no-cache python3 py3-pip py3-requests && \
+    pip3 install flask --break-system-packages
 
 WORKDIR /app
-
-RUN pip install flask requests
-
 COPY app/server.py /app/server.py
 COPY app/templates/index.html /app/templates/index.html
 COPY run.sh /run.sh
