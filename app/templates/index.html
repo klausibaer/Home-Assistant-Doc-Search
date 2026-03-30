@@ -178,11 +178,11 @@ input[type="checkbox"]{accent-color:var(--teal)}
         <label class="field-label">PLZ</label>
         <input class="field-input" id="plzInput" type="text" maxlength="5" placeholder="z.B. 10115">
       </div>
-      <div class="field-group">
+      <div class="field-group" style="position:relative">
         <label class="field-label">Fachbereich</label>
-        <select class="field-select" id="fachbereichSelect">
-          <option value="">Bitte wählen…</option>
-        </select>
+        <input class="field-input" id="fachbereichInput" type="text" placeholder="z.B. Psychiatrie, Urologie…" autocomplete="off" oninput="onFachInput(this.value)" onblur="setTimeout(hideSuggestions,200)">
+        <input type="hidden" id="fachbereichSelect" value="">
+        <div id="fachSuggestions" style="display:none;position:absolute;top:100%;left:0;right:0;background:#fff;border:1.5px solid var(--teal-mid);border-top:none;border-radius:0 0 var(--r) var(--r);box-shadow:0 4px 12px rgba(0,0,0,.1);z-index:500;max-height:260px;overflow-y:auto"></div>
       </div>
       <div class="row2">
         <div class="field-group">
@@ -371,17 +371,25 @@ var state = { doctors: [], selected: {} };
 // Config field IDs to persist
 var CONFIG_FIELDS = ['apiKeyInput','gmailClientId','gmailSecret','gmailRefresh','senderName'];
 
+// Base URL — works with HA Ingress which adds path prefix
+var BASE = (function(){
+  var p = window.location.pathname;
+  // Remove trailing slash
+  return p.endsWith('/') ? p.slice(0,-1) : p;
+})();
+function api(path){ return BASE + '/' + path; }
+
 function saveConfig(){
   var cfg = {};
   CONFIG_FIELDS.forEach(function(id){
     var el = document.getElementById(id);
     if(el) cfg[id] = el.value;
   });
-  fetch('/api/config', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(cfg)});
+  fetch(api('api/config'),{method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(cfg)});
 }
 
 function loadConfig(){
-  fetch('/api/config').then(function(r){return r.json()}).then(function(cfg){
+  fetch(api('api/config')).then(function(r){return r.json()}).then(function(cfg){
     CONFIG_FIELDS.forEach(function(id){
       var el = document.getElementById(id);
       if(el && cfg[id]) el.value = cfg[id];
@@ -395,10 +403,7 @@ function loadConfig(){
 (function(){
   var now = new Date(); now.setDate(now.getDate()+1); now.setHours(9,0,0,0);
   document.getElementById('bulkDateTime').value = toLocal(now);
-  fetch('/api/fachbereiche').then(r=>r.json()).then(function(list){
-    var sel = document.getElementById('fachbereichSelect');
-    list.forEach(function(f){ var o=document.createElement('option'); o.value=o.textContent=f; sel.appendChild(o); });
-  });
+  // Fachbereich autocomplete initialized
   document.getElementById('emailBody').addEventListener('input', updatePreview);
   document.getElementById('emailSubject').addEventListener('input', updatePreview);
 
@@ -425,13 +430,14 @@ function showTab(name){
 
 function startSearch(){
   var plz=document.getElementById('plzInput').value.trim();
-  var fach=document.getElementById('fachbereichSelect').value;
+  var fach=document.getElementById('fachbereichInput').value.trim();
+  var fachFilter=window._fachFilter||null;
   if(!/^\d{5}$/.test(plz)) return showAlert('alertArea','error','Bitte gültige PLZ eingeben');
-  if(!fach) return showAlert('alertArea','error','Bitte Fachbereich wählen');
+  if(!fach) return showAlert('alertArea','error','Bitte Fachbereich eingeben');
   setLoading('searchBtn',true);
   showProgress('Suche läuft…','Crawle 116117 für '+fach+' um '+plz);
-  fetch('/api/search',{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({plz:plz,fachbereich:fach,radius:parseInt(document.getElementById('radiusInput').value)||15})
+  fetch(api('api/search'),{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({plz:plz,fachbereich:fach,fgg:(fachFilter&&fachFilter.fgg)||null,filterSelections:(fachFilter&&fachFilter.filterSelections)||null,radius:parseInt(document.getElementById('radiusInput').value)||15})
   }).then(function(r){return r.json()}).then(function(data){
     hideProgress(); setLoading('searchBtn',false);
     if(data.error){ showAlert('alertArea','error','❌ '+data.error); return; }
@@ -523,7 +529,7 @@ function generateWithClaude(){
   if(!prompt) return alert('Prompt eingeben');
   var sel=getSelected(); if(!sel.length) return alert('Ärzte auswählen');
   setLoading('claudeBtn',true); showProgress('Claude generiert…','');
-  fetch('/api/claude',{method:'POST',headers:{'Content-Type':'application/json'},
+  fetch(api('api/claude'),{method:'POST',headers:{'Content-Type':'application/json'},
     body:JSON.stringify({doctor:sel[0],prompt:prompt,apiKey:key})
   }).then(function(r){return r.json()}).then(function(d){
     hideProgress(); setLoading('claudeBtn',false);
@@ -569,7 +575,7 @@ function sendAllEmails(){
   if(!jobs.length) return showAlert('sendAlert','warn','Keine Ärzte mit E-Mail ausgewählt');
   setLoading('sendAllBtn',true);
   jobs.forEach(function(j){var s=document.getElementById('qstatus-'+j._idx);if(s)s.textContent='⏳ Sende…';});
-  fetch('/api/gmail/send',{method:'POST',headers:{'Content-Type':'application/json'},
+  fetch(api('api/gmail/send'),{method:'POST',headers:{'Content-Type':'application/json'},
     body:JSON.stringify({jobs:jobs,clientId:cid,clientSecret:sec,refreshToken:ref,senderName:senderName})
   }).then(function(r){return r.json()}).then(function(data){
     setLoading('sendAllBtn',false);
@@ -594,7 +600,7 @@ function loadGmailProfile(){
   var sec=document.getElementById('gmailSecret').value.trim();
   var ref=document.getElementById('gmailRefresh').value.trim();
   if(!cid||!sec||!ref) return alert('Gmail Credentials eingeben');
-  fetch('/api/gmail/profile',{method:'POST',headers:{'Content-Type':'application/json'},
+  fetch(api('api/gmail/profile'),{method:'POST',headers:{'Content-Type':'application/json'},
     body:JSON.stringify({clientId:cid,clientSecret:sec,refreshToken:ref})
   }).then(function(r){return r.json()}).then(function(d){
     if(d.email) document.getElementById('senderBadge').textContent=d.email;
@@ -633,7 +639,7 @@ function createAllCallEvents(){
   });
   if(!jobs.length) return alert('Keine Ärzte mit Datum');
   setLoading('createCalBtn',true);
-  fetch('/api/calendar/create',{method:'POST',headers:{'Content-Type':'application/json'},
+  fetch(api('api/calendar/create'),{method:'POST',headers:{'Content-Type':'application/json'},
     body:JSON.stringify({jobs:jobs,clientId:cid,clientSecret:sec,refreshToken:ref})
   }).then(function(r){return r.json()}).then(function(data){
     setLoading('createCalBtn',false);
@@ -657,6 +663,68 @@ function setLoading(id,loading){var btn=document.getElementById(id);if(!btn)retu
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function toLocal(d){var p=function(n){return n<10?'0'+n:n};return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+'T'+p(d.getHours())+':'+p(d.getMinutes());}
 
+// ── Fachbereich Autocomplete ─────────────────────────────────
+var _suggestTimer = null;
+window._fachFilter = null;
+
+function onFachInput(val){
+  clearTimeout(_suggestTimer);
+  if(val.length < 2){ hideSuggestions(); window._fachFilter=null; return; }
+  _suggestTimer = setTimeout(function(){ fetchSuggestions(val); }, 250);
+}
+
+function fetchSuggestions(q){
+  fetch(api('api/multisuggest') + '?s=' + encodeURIComponent(q))
+    .then(function(r){return r.json()})
+    .then(function(data){ renderSuggestions(data, q); })
+    .catch(function(){ hideSuggestions(); });
+}
+
+function renderSuggestions(data, q){
+  var box = document.getElementById('fachSuggestions');
+  box.innerHTML = '';
+  if(!Array.isArray(data)||data.length===0){ hideSuggestions(); return; }
+
+  data.forEach(function(group){
+    if(!group.entries||!group.entries.length) return;
+    // Group header
+    var hdr = document.createElement('div');
+    hdr.style.cssText = 'padding:6px 12px 3px;font-size:10px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--text-3);background:#F8FAFA;border-bottom:1px solid var(--border)';
+    hdr.textContent = group.title;
+    box.appendChild(hdr);
+
+    group.entries.forEach(function(entry){
+      var item = document.createElement('div');
+      item.style.cssText = 'padding:9px 14px;cursor:pointer;font-size:13px;border-bottom:1px solid #F0F4F4;display:flex;justify-content:space-between;align-items:center';
+      item.innerHTML = '<span>' + esc(entry.value) + '</span>' +
+        '<span style="font-size:11px;color:var(--text-3);font-family:'DM Mono',monospace">' + (entry.count||'').toLocaleString('de') + '</span>';
+      item.addEventListener('mousedown', function(){
+        selectFach(entry, group);
+      });
+      item.addEventListener('mouseover', function(){ this.style.background='var(--teal-light)'; });
+      item.addEventListener('mouseout',  function(){ this.style.background=''; });
+      box.appendChild(item);
+    });
+  });
+
+  box.style.display = 'block';
+}
+
+function selectFach(entry, group){
+  document.getElementById('fachbereichInput').value = entry.value;
+  // Store filter info for API call
+  window._fachFilter = {
+    fgg: entry.code,
+    filterSelections: [{ title: group.title, fieldName: group.fieldName, selectedCodes: [String(entry.code)] }]
+  };
+  hideSuggestions();
+}
+
+function hideSuggestions(){
+  document.getElementById('fachSuggestions').style.display='none';
+}
+
+// ─────────────────────────────────────────────────────────────
 function toggleSidebar(){
   var s=document.getElementById('mainSidebar');
   var o=document.getElementById('sidebarOverlay');
