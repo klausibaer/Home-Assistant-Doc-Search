@@ -1,6 +1,6 @@
 name: "Arztsuche Outreach"
 description: "116117 Arztsuche + Claude AI + Gmail + Google Calendar"
-version: "1.0.3"
+version: "1.0.4"
 slug: "arztsuche_outreach"
 init: false
 arch:
@@ -8,13 +8,10 @@ arch:
   - amd64
   - armhf
   - armv7
+  - i386
 ingress: true
 ingress_port: 5055
 panel_icon: mdi:doctor
 panel_title: Arztsuche
 startup: services
 boot: auto
-map: []
-options: {}
-schema: {}
-image: ""
