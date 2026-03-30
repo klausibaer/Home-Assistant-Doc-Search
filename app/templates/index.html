@@ -368,6 +368,29 @@ input[type="checkbox"]{accent-color:var(--teal)}
 <script>
 var state = { doctors: [], selected: {} };
 
+// Config field IDs to persist
+var CONFIG_FIELDS = ['apiKeyInput','gmailClientId','gmailSecret','gmailRefresh','senderName'];
+
+function saveConfig(){
+  var cfg = {};
+  CONFIG_FIELDS.forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) cfg[id] = el.value;
+  });
+  fetch('/api/config', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(cfg)});
+}
+
+function loadConfig(){
+  fetch('/api/config').then(function(r){return r.json()}).then(function(cfg){
+    CONFIG_FIELDS.forEach(function(id){
+      var el = document.getElementById(id);
+      if(el && cfg[id]) el.value = cfg[id];
+    });
+    // Load Gmail profile if credentials exist
+    if(cfg.gmailClientId && cfg.gmailSecret && cfg.gmailRefresh) loadGmailProfile();
+  });
+}
+
 // Init
 (function(){
   var now = new Date(); now.setDate(now.getDate()+1); now.setHours(9,0,0,0);
@@ -378,6 +401,15 @@ var state = { doctors: [], selected: {} };
   });
   document.getElementById('emailBody').addEventListener('input', updatePreview);
   document.getElementById('emailSubject').addEventListener('input', updatePreview);
+
+  // Load saved config on startup
+  loadConfig();
+
+  // Auto-save on any input change in sidebar
+  CONFIG_FIELDS.forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) el.addEventListener('change', saveConfig);
+  });
 })();
 
 function showTab(name){
