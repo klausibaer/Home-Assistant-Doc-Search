@@ -158,7 +158,7 @@ input[type="checkbox"]{accent-color:var(--teal)}
 </div>
 
 <div class="header">
-  <button class="sidebar-toggle" onclick="toggleSidebar()" aria-label="Menü">☰</button>
+  <button class="sidebar-toggle" id="btnSidebarToggle" aria-label="Menü">☰</button>
   <div class="header-logo">🏥</div>
   <div>
     <div class="header-title">Arztsuche Outreach</div>
@@ -168,10 +168,10 @@ input[type="checkbox"]{accent-color:var(--teal)}
   <div class="header-badge" id="senderBadge">—</div>
 </div>
 
-<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+<div class="sidebar-overlay" id="sidebarOverlay" id="btnSidebarToggle"></div>
 <div class="layout">
   <div class="sidebar" id="mainSidebar">
-    <button class="sidebar-close" onclick="toggleSidebar()" aria-label="Schließen">✕</button>
+    <button class="sidebar-close" id="btnSidebarToggle" aria-label="Schließen">✕</button>
     <div class="sidebar-label">Suche</div>
     <div class="sidebar-section">
       <div class="field-group">
@@ -190,31 +190,16 @@ input[type="checkbox"]{accent-color:var(--teal)}
           <input class="field-input" id="radiusInput" type="number" value="15" min="5" max="50">
         </div>
       </div>
-      <button class="btn btn-primary" id="searchBtn" onclick="startSearch()">
+      <button class="btn btn-primary" id="searchBtn" id="startSearchBtn">
         <div class="spinner"></div><span class="btn-text">🔍 Suche starten</span>
       </button>
     </div>
-
-    <div class="sidebar-divider"></div>
-    <div class="sidebar-label">116117 Session Cookie</div>
-    <div class="sidebar-section">
-      <div class="field-group">
-        <label class="field-label" style="display:flex;justify-content:space-between">
-          Cookie
-          <span class="toggle-key" onclick="document.getElementById('sessionCookie').classList.toggle('key-hidden')">anzeigen</span>
-        </label>
-        <textarea class="field-input mono key-hidden" id="sessionCookie" rows="2" style="font-size:10px;resize:none" placeholder="JSESSIONID=...; TS013407f0=..."></textarea>
-        <div style="font-size:11px;color:var(--text-3);margin-top:4px;line-height:1.5">
-          F12 → Network → /api/data → Request Headers → <b>cookie</b> kopieren.<br>
-          Gültig ~25 Min.
-        </div>
-      </div>
     </div>
     <div class="sidebar-divider"></div>
     <div class="sidebar-label">Claude API</div>
     <div class="sidebar-section">
       <div class="field-group">
-        <label class="field-label">API Key <span class="toggle-key" onclick="document.getElementById('apiKeyInput').classList.toggle('key-hidden')">anzeigen</span></label>
+        <label class="field-label">API Key <span class="toggle-key" data-toggle="apiKeyInput">anzeigen</span></label>
         <input class="field-input mono key-hidden" id="apiKeyInput" type="text" placeholder="sk-ant-...">
       </div>
     </div>
@@ -227,27 +212,27 @@ input[type="checkbox"]{accent-color:var(--teal)}
         <input class="field-input mono" id="gmailClientId" type="text" placeholder="...apps.googleusercontent.com">
       </div>
       <div class="field-group">
-        <label class="field-label">Client Secret <span class="toggle-key" onclick="document.getElementById('gmailSecret').classList.toggle('key-hidden')">anzeigen</span></label>
+        <label class="field-label">Client Secret <span class="toggle-key" data-toggle="gmailSecret">anzeigen</span></label>
         <input class="field-input mono key-hidden" id="gmailSecret" type="text" placeholder="GOCSPX-...">
       </div>
       <div class="field-group">
-        <label class="field-label">Refresh Token <span class="toggle-key" onclick="document.getElementById('gmailRefresh').classList.toggle('key-hidden')">anzeigen</span></label>
+        <label class="field-label">Refresh Token <span class="toggle-key" data-toggle="gmailRefresh">anzeigen</span></label>
         <input class="field-input mono key-hidden" id="gmailRefresh" type="text" placeholder="1//0g...">
       </div>
       <div class="field-group">
         <label class="field-label">Absendername</label>
         <input class="field-input" id="senderName" type="text" placeholder="Max Mustermann">
       </div>
-      <button class="btn btn-secondary btn-sm" onclick="loadGmailProfile()" style="width:100%">✉️ E-Mail-Adresse laden</button>
+      <button class="btn btn-secondary btn-sm" id="btnGmailProfile" style="width:100%">✉️ E-Mail-Adresse laden</button>
     </div>
   </div>
 
   <div class="main">
     <div class="tabs">
-      <div class="tab active" onclick="showTab('results')">📋 Ergebnisse <span class="tab-badge" id="badgeResults">0</span></div>
-      <div class="tab" onclick="showTab('compose')">✉️ Compose <span class="tab-badge" id="badgeSelected">0</span></div>
-      <div class="tab" onclick="showTab('send')">🚀 Versenden</div>
-      <div class="tab" onclick="showTab('calendar')">📅 Anrufe planen</div>
+      <div class="tab active" id="tab-btn-results">📋 Ergebnisse <span class="tab-badge" id="badgeResults">0</span></div>
+      <div class="tab" id="tab-btn-compose">✉️ Compose <span class="tab-badge" id="badgeSelected">0</span></div>
+      <div class="tab" id="tab-btn-send">🚀 Versenden</div>
+      <div class="tab" id="tab-btn-calendar">📅 Anrufe planen</div>
     </div>
 
     <!-- RESULTS -->
@@ -269,23 +254,23 @@ input[type="checkbox"]{accent-color:var(--teal)}
       <div id="resultsPanel" style="display:none">
         <div class="results-toolbar">
           <div class="results-count" id="resultsCount">0 Ärzte</div>
-          <input class="search-filter" id="tableFilter" placeholder="Filtern…" oninput="filterTable()">
-          <button class="btn btn-secondary btn-sm" onclick="selectAll()">Alle</button>
-          <button class="btn btn-sm" style="background:var(--bg);border:1px solid var(--border)" onclick="selectNone()">Keine</button>
-          <button class="btn btn-secondary btn-sm" onclick="selectWithEmail()">Nur mit E-Mail</button>
+          <input class="search-filter" id="tableFilter" placeholder="Filtern…" id="tableFilterInput">
+          <button class="btn btn-secondary btn-sm" id="btnSelectAll">Alle</button>
+          <button class="btn btn-sm" style="background:var(--bg);border:1px solid var(--border)" id="btnSelectNone">Keine</button>
+          <button class="btn btn-secondary btn-sm" id="btnSelectEmail">Nur mit E-Mail</button>
         </div>
         <div class="table-wrap">
           <table>
             <thead><tr>
-              <th style="width:36px"><input type="checkbox" id="checkAll" onchange="toggleAll(this.checked)"></th>
+              <th style="width:36px"><input type="checkbox" id="checkAll"></th>
               <th>Name</th><th>Fachbereich</th><th>PLZ / Ort</th><th>Telefon</th><th>E-Mail</th><th>Heute</th>
             </tr></thead>
             <tbody id="doctorTableBody"></tbody>
           </table>
         </div>
         <div style="margin-top:12px;display:flex;gap:10px">
-          <button class="btn btn-secondary btn-sm" onclick="exportCSV()">📥 CSV</button>
-          <button class="btn btn-primary btn-sm" onclick="goToCompose()">✉️ E-Mails verfassen →</button>
+          <button class="btn btn-secondary btn-sm" id="btnExportCSV">📥 CSV</button>
+          <button class="btn btn-primary btn-sm" id="btnGoCompose">✉️ E-Mails verfassen →</button>
         </div>
       </div>
     </div>
@@ -298,7 +283,7 @@ input[type="checkbox"]{accent-color:var(--teal)}
           <div class="ai-label">🤖 Claude KI — Prompt</div>
           <textarea class="composer-textarea" id="claudePrompt" style="min-height:80px" placeholder="z.B.: Schreibe eine professionelle Anfrage-E-Mail an {{name}}, einen {{fachbereich}} in {{city}}, für eine Kooperation..."></textarea>
           <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
-            <button class="btn btn-primary btn-sm" id="claudeBtn" onclick="generateWithClaude()">
+            <button class="btn btn-primary btn-sm" id="claudeBtn" id="btnClaude">
               <div class="spinner"></div><span class="btn-text">🤖 Mit Claude generieren</span>
             </button>
             <span style="font-size:12px;color:var(--text-3)">Generiert für den ersten ausgewählten Arzt</span>
@@ -326,7 +311,7 @@ input[type="checkbox"]{accent-color:var(--teal)}
           <div>
             <div class="field-group">
               <label class="field-label">Vorschau:
-                <select id="previewSelect" style="margin-left:8px;font-size:12px;padding:2px 6px;border:1px solid var(--border);border-radius:4px;font-family:inherit" onchange="updatePreview()">
+                <select id="previewSelect" style="margin-left:8px;font-size:12px;padding:2px 6px;border:1px solid var(--border);border-radius:4px;font-family:inherit">
                   <option value="">Arzt wählen…</option>
                 </select>
               </label>
@@ -334,7 +319,7 @@ input[type="checkbox"]{accent-color:var(--teal)}
             </div>
           </div>
         </div>
-        <button class="btn btn-primary btn-sm" onclick="goToSend()" style="margin-top:8px">🚀 Weiter →</button>
+        <button class="btn btn-primary btn-sm" id="btnGoSend" style="margin-top:8px">🚀 Weiter →</button>
       </div>
     </div>
 
@@ -347,10 +332,10 @@ input[type="checkbox"]{accent-color:var(--teal)}
         <div id="sendQueueWrap" style="display:none">
           <div class="send-queue" id="sendQueue"></div>
           <div style="margin-top:16px;display:flex;gap:10px">
-            <button class="btn btn-primary" style="width:auto;padding:10px 24px" onclick="sendAllEmails()" id="sendAllBtn">
+            <button class="btn btn-primary" style="width:auto;padding:10px 24px" id="btnSendAll" id="sendAllBtn">
               <div class="spinner"></div><span class="btn-text">📨 Alle senden</span>
             </button>
-            <button class="btn btn-secondary btn-sm" onclick="showTab('results')">← Zurück</button>
+            <button class="btn btn-secondary btn-sm" id="tab-btn-results">← Zurück</button>
           </div>
         </div>
       </div>
@@ -365,11 +350,11 @@ input[type="checkbox"]{accent-color:var(--teal)}
           <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap">
             <label class="field-label" style="margin:0;white-space:nowrap">Standardzeit:</label>
             <input type="datetime-local" class="datetime-input" id="bulkDateTime">
-            <button class="btn btn-secondary btn-sm" onclick="applyBulkTime()">Für alle übernehmen</button>
+            <button class="btn btn-secondary btn-sm" id="btnBulkTime">Für alle übernehmen</button>
           </div>
           <div class="call-cards" id="callCards"></div>
           <div style="margin-top:16px;display:flex;gap:10px">
-            <button class="btn btn-primary" style="width:auto;padding:10px 24px" onclick="createAllCallEvents()" id="createCalBtn">
+            <button class="btn btn-primary" style="width:auto;padding:10px 24px" id="btnCreateCal" id="createCalBtn">
               <div class="spinner"></div><span class="btn-text">📅 Termine anlegen</span>
             </button>
           </div>
@@ -384,7 +369,7 @@ input[type="checkbox"]{accent-color:var(--teal)}
 var state = { doctors: [], selected: {} };
 
 // Config field IDs to persist
-var CONFIG_FIELDS = ['apiKeyInput','gmailClientId','gmailSecret','gmailRefresh','senderName','sessionCookie'];
+var CONFIG_FIELDS = ['apiKeyInput','gmailClientId','gmailSecret','gmailRefresh','senderName'];
 
 // Base URL — works with HA Ingress which adds path prefix
 var BASE = (function(){
@@ -423,6 +408,87 @@ function loadConfig(){
   document.getElementById('emailSubject').addEventListener('input', updatePreview);
   document.getElementById('fachbereichInput').addEventListener('input', function(){ onFachInput(this.value); });
   document.getElementById('fachbereichInput').addEventListener('blur', function(){ setTimeout(hideSuggestions, 200); });
+  document.getElementById('previewSelect').addEventListener('change', updatePreview);
+  document.getElementById('tableFilter').addEventListener('input', filterTable);
+  document.getElementById('checkAll').addEventListener('change', function(){ toggleAll(this.checked); });
+
+  // Tab clicks
+  document.querySelectorAll('[data-tab]').forEach(function(el){
+    el.addEventListener('click', function(){ showTab(this.getAttribute('data-tab')); });
+  });
+
+  // Button actions
+  document.getElementById('searchBtn').addEventListener('click', startSearch);
+  document.getElementById('openSettingsBtn').addEventListener('click', openSettings);
+  document.getElementById('closeSettingsBtn').addEventListener('click', closeSettings);
+  document.getElementById('saveSettingsBtn').addEventListener('click', saveSettings);
+  // Close on backdrop click
+  document.getElementById('settingsModal').addEventListener('click', function(e){
+    if(e.target===this) closeSettings();
+  });
+  var actions = {
+    'filter': filterTable, 'selectAll': selectAll, 'selectNone': selectNone,
+    'selectWithEmail': selectWithEmail, 'exportCSV': exportCSV,
+    'goToCompose': goToCompose, 'generateWithClaude': generateWithClaude,
+    'goToSend': goToSend, 'sendAllEmails': sendAllEmails,
+    'loadGmailProfile': loadGmailProfile, 'applyBulkTime': applyBulkTime,
+    'createAllCallEvents': createAllCallEvents, 'toggleSidebar': toggleSidebar
+  };
+  document.querySelectorAll('[data-action]').forEach(function(el){
+    var action = el.getAttribute('data-action');
+    if(actions[action]) el.addEventListener('click', actions[action]);
+  });
+
+  // Toggle key visibility
+  document.querySelectorAll('[data-toggle]').forEach(function(el){
+    el.addEventListener('click', function(){
+      var target = document.getElementById(this.getAttribute('data-toggle'));
+      if(target) target.classList.toggle('key-hidden');
+    });
+  });
+
+  // Tab buttons
+  ['results','compose','send','calendar'].forEach(function(name){
+    var el = document.getElementById('tab-btn-'+name);
+    if(el) el.addEventListener('click', function(){ showTab(name); });
+  });
+
+  // Action buttons
+  var B = function(id, fn){ var el=document.getElementById(id); if(el) el.addEventListener('click', fn); };
+  B('startSearchBtn',   startSearch);
+  B('btnSelectAll',     selectAll);
+  B('btnSelectNone',    selectNone);
+  B('btnSelectEmail',   selectWithEmail);
+  B('btnExportCSV',     exportCSV);
+  B('btnGoCompose',     goToCompose);
+  B('btnGoSend',        goToSend);
+  B('btnClaude',        generateWithClaude);
+  B('btnSendAll',       sendAllEmails);
+  B('btnBulkTime',      applyBulkTime);
+  B('btnCreateCal',     createAllCallEvents);
+  B('btnGmailProfile',  loadGmailProfile);
+  B('btnSidebarToggle', toggleSidebar);
+  B('searchBtn',        startSearch);
+
+  // Table filter
+  var tf = document.getElementById('tableFilterInput') || document.getElementById('tableFilter');
+  if(tf) tf.addEventListener('input', filterTable);
+
+  // checkAll
+  var ca = document.getElementById('checkAll');
+  if(ca) ca.addEventListener('change', function(){ toggleAll(this.checked); });
+
+  // Preview select
+  var ps = document.getElementById('previewSelect');
+  if(ps) ps.addEventListener('change', updatePreview);
+
+  // Toggle key visibility
+  document.querySelectorAll('[data-toggle]').forEach(function(el){
+    el.addEventListener('click', function(){
+      var target = document.getElementById(this.getAttribute('data-toggle'));
+      if(target) target.classList.toggle('key-hidden');
+    });
+  });
 
   // Startup test
   fetch('api/fachbereiche')
@@ -466,7 +532,7 @@ function startSearch(){
   setLoading('searchBtn',true);
   showProgress('Suche läuft…','Crawle 116117 für '+fach+' um '+plz);
   fetch(api('api/search'),{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({plz:plz,fachbereich:fach,fgg:(fachFilter&&fachFilter.fgg)||null,filterSelections:(fachFilter&&fachFilter.filterSelections)||null,radius:parseInt(document.getElementById('radiusInput').value)||15,cookie:document.getElementById('sessionCookie').value.trim()})
+    body:JSON.stringify({plz:plz,fachbereich:fach,fgg:(fachFilter&&fachFilter.fgg)||null,filterSelections:(fachFilter&&fachFilter.filterSelections)||null,radius:parseInt(document.getElementById('radiusInput').value)||15})
   }).then(function(r){return r.json()}).then(function(data){
     hideProgress(); setLoading('searchBtn',false);
     if(data.error){ showAlert('alertArea','error','❌ '+data.error); return; }
@@ -754,6 +820,17 @@ function hideSuggestions(){
 }
 
 // ─────────────────────────────────────────────────────────────
+function openSettings(){
+  document.getElementById('settingsModal').style.display='flex';
+}
+function closeSettings(){
+  document.getElementById('settingsModal').style.display='none';
+}
+function saveSettings(){
+  saveConfig();
+  document.getElementById('settingsStatus').textContent='✅ Gespeichert';
+  setTimeout(function(){ document.getElementById('settingsStatus').textContent=''; }, 2000);
+}
 function toggleSidebar(){
   var s=document.getElementById('mainSidebar');
   var o=document.getElementById('sidebarOverlay');
@@ -769,5 +846,46 @@ startSearch = function(){
   _origStartSearch();
 };
 </script>
+
+<!-- Settings Modal -->
+<div id="settingsModal" style="display:none;position:fixed;inset:0;background:rgba(18,28,28,.6);z-index:1000;align-items:center;justify-content:center;backdrop-filter:blur(3px)">
+  <div style="background:#fff;border-radius:var(--r-lg);padding:28px;width:min(480px,95vw);max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.25)">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid var(--border)">
+      <div style="font-size:15px;font-weight:600">⚙️ API-Einstellungen</div>
+      <button id="closeSettingsBtn" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--text-3);line-height:1">✕</button>
+    </div>
+
+    <div style="font-size:12px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--text-3);margin-bottom:10px">Claude AI</div>
+    <div class="field-group">
+      <label class="field-label">API Key <span class="toggle-key" data-toggle="apiKeyInput">anzeigen</span></label>
+      <input class="field-input mono key-hidden" id="apiKeyInput" type="text" placeholder="sk-ant-...">
+    </div>
+
+    <div style="font-size:12px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--text-3);margin:16px 0 10px">Google (Gmail + Calendar)</div>
+    <div class="field-group">
+      <label class="field-label">Client ID</label>
+      <input class="field-input mono" id="gmailClientId" type="text" placeholder="...apps.googleusercontent.com">
+    </div>
+    <div class="field-group">
+      <label class="field-label">Client Secret <span class="toggle-key" data-toggle="gmailSecret">anzeigen</span></label>
+      <input class="field-input mono key-hidden" id="gmailSecret" type="text" placeholder="GOCSPX-...">
+    </div>
+    <div class="field-group">
+      <label class="field-label">Refresh Token <span class="toggle-key" data-toggle="gmailRefresh">anzeigen</span></label>
+      <input class="field-input mono key-hidden" id="gmailRefresh" type="text" placeholder="1//0g...">
+    </div>
+    <div class="field-group">
+      <label class="field-label">Absendername</label>
+      <input class="field-input" id="senderName" type="text" placeholder="Max Mustermann">
+    </div>
+
+    <div style="display:flex;gap:10px;margin-top:20px">
+      <button class="btn btn-primary btn-sm" id="saveSettingsBtn" style="flex:1">💾 Speichern</button>
+      <button class="btn btn-secondary btn-sm" data-action="loadGmailProfile" style="flex:1">✉️ E-Mail laden</button>
+    </div>
+    <div id="settingsStatus" style="margin-top:10px;font-size:12px;color:var(--success)"></div>
+  </div>
+</div>
+
 </body>
 </html>
