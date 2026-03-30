@@ -71,12 +71,14 @@ def geocode_plz(plz):
         log.error(f'Geocoding {plz}: {e}')
         return None
 
-def search_116117(lat, lon, fgg):
+def search_116117(lat, lon, fgg, filter_selections=None):
     cookies = get_116117_session()
+    if filter_selections is None:
+        filter_selections = [{'title': 'Fachgebiet Kategorie', 'fieldName': 'fgg', 'selectedCodes': [str(fgg)]}]
     payload = {'r': 900, 'locType': 'LATLON', 'lat': lat, 'lon': lon, 'plz': None,
         'osmId': None, 'osmType': None, 'locOrigin': 'BROWSER_AUTO',
         'searchTrigger': 'INITIAL', 'viaDeeplink': False,
-        'filterSelections': [{'title': 'Fachgebiet Kategorie', 'fieldName': 'fgg', 'selectedCodes': [fgg]}]}
+        'filterSelections': filter_selections}
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36',
         'Accept': 'application/json, text/plain, */*',
@@ -244,7 +246,8 @@ def api_search():
     fachbereich = data.get('fachbereich', '')
     if not plz or not fachbereich:
         return jsonify({'error': 'PLZ und Fachbereich erforderlich'}), 400
-    fgg = FACH_CODES.get(fachbereich, '01')
+    fgg = data.get('fgg') or FACH_CODES.get(fachbereich, '01')
+    filter_selections = data.get('filterSelections') or [{'title': 'Fachgebiet Kategorie', 'fieldName': 'fgg', 'selectedCodes': [str(fgg)]}]
     plz_list = get_neighboring_plzs(plz)
     plz_list.insert(0, plz)
     plz_list = list(dict.fromkeys(plz_list))[:15]
@@ -254,7 +257,7 @@ def api_search():
         coords = geocode_plz(p)
         if not coords: continue
         try:
-            items = search_116117(coords['lat'], coords['lon'], fgg)
+            items = search_116117(coords['lat'], coords['lon'], fgg, filter_selections)
             for item in items:
                 doc = parse_doctor(item, fachbereich)
                 key = (doc['name'] + doc['plz'] + doc['phone']).lower().replace(' ','')
@@ -318,6 +321,34 @@ def api_calendar():
 @app.route('/api/fachbereiche')
 def api_fachbereiche():
     return jsonify(list(FACH_CODES.keys()))
+
+@app.route('/api/multisuggest')
+def api_multisuggest():
+    s = request.args.get('s', '')
+    cookies = get_116117_session()
+    ms = 3000000 + random.randint(0, 300000)
+    req_val = base64.b64encode(str(ms).encode()).decode()
+    try:
+        resp = requests.get(
+            f'https://arztsuche.116117.de/api/multisuggest?s={s}',
+            headers={
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36',
+                'Accept': 'application/json, text/plain, */*',
+                'Accept-Language': 'de-DE,de;q=0.9',
+                'Authorization': 'Basic YmRwczpma3I0OTNtdmdfZg==',
+                'req-val': req_val,
+                'Referer': 'https://arztsuche.116117.de/',
+                'sec-fetch-dest': 'empty',
+                'sec-fetch-mode': 'cors',
+                'sec-fetch-site': 'same-origin',
+            },
+            cookies=cookies,
+            timeout=8
+        )
+        return jsonify(resp.json())
+    except Exception as e:
+        log.error(f'multisuggest error: {e}')
+        return jsonify([])
 
 if __name__ == '__main__':
     log.info(f'Starting on port {PORT}')
