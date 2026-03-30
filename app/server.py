@@ -207,6 +207,31 @@ def claude_generate(doctor, prompt, api_key):
     if data.get('error'): raise Exception(data['error']['message'])
     return data['content'][0]['text']
 
+# ── Config persistence ───────────────────────────────────────
+CONFIG_FILE = '/data/arztsuche_config.json'
+
+@app.route('/api/config', methods=['GET'])
+def get_config():
+    try:
+        if _os.path.exists(CONFIG_FILE):
+            with open(CONFIG_FILE, 'r') as f:
+                return jsonify(json.load(f))
+    except Exception as e:
+        log.error(f'Config load error: {e}')
+    return jsonify({})
+
+@app.route('/api/config', methods=['POST'])
+def save_config():
+    try:
+        _os.makedirs('/data', exist_ok=True)
+        data = request.json or {}
+        with open(CONFIG_FILE, 'w') as f:
+            json.dump(data, f, indent=2)
+        return jsonify({'ok': True})
+    except Exception as e:
+        log.error(f'Config save error: {e}')
+        return jsonify({'error': str(e)}), 500
+
 # ── Routes ────────────────────────────────────────────────────
 @app.route('/')
 def index():
